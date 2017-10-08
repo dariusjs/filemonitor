@@ -1,0 +1,10 @@
+{
+    "directories" : [
+        {
+            "directory":"/tmp"
+        },
+        {
+            "directory":"/macOS_SDK"
+        }
+    ]
+}
