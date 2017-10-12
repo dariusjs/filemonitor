@@ -1,10 +1,7 @@
 {
-    "directories" : [
-        {
-            "directory":"/tmp"
-        },
-        {
-            "directory":"/macOS_SDK"
-        }
-    ]
+  "directories" : [
+    {
+      "directory":"c:\\temp"
+    }
+  ]
 }
