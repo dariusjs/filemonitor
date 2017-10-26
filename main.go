@@ -6,18 +6,6 @@ import (
   "log"
 )
 
-type Directory struct {
-  Directory string `json:"directory"`
-}
-
-type Config struct {
-  Directories []Directory `json:"directories"`
-}
-	
-func CountFiles() {
-	 
-}
-
 func main() {
   config, _ := LoadConfiguration("config.json")
   fmt.Println(config)
@@ -34,4 +22,6 @@ func main() {
       fmt.Println(file.Name())
     }
   }
+
+  GenerateConfig()
 }
