@@ -6,14 +6,6 @@ import (
   "encoding/json"
 )
 
-type Config struct {
-  Directories []Directory `json:"directories"`
-}
-
-type Directory struct {
-  Object string `json:"directory"`
-}
-
 func LoadConfiguration(filename string) (Config, error) {
   var config Config
   configFile, err := os.Open(filename)

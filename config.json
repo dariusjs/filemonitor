@@ -1,7 +1,8 @@
 {
   "directories" : [
     {
-      "directory":"/tmp"
+      "directory": "/tmp",
+      "find": "-60"
     }
   ]
 }

@@ -1,27 +1,27 @@
 package main
 
-import (
-  "fmt"
-  "io/ioutil"
-  "log"
-)
+import "flag"
+import "fmt"
 
 func main() {
-  config, _ := LoadConfiguration("config.json")
-  fmt.Println(config)
-  fmt.Println(config.Directories)
+  //loadConf := flag.String("c", "config.json", "Used for loading config files.")
+  genConfig := flag.Bool("g", false, "Used for generating config files")
+  listObjects := flag.Bool("l", false, "Execute the default config.json config file")
+  daemonize := flag.Bool("d", false, "Daemonise the filemonitor")
 
-  for _, dir := range config.Directories {
-  fmt.Println(dir.Object)
+  flag.Parse()
 
-  files, err := ioutil.ReadDir(dir.Object)
-    if err != nil {
-      log.Fatal(err)
-    }
-    for _, file := range files {
-      fmt.Println(file.Name())
-    }
+  if *genConfig == true {
+    fmt.Println("Generate Config:", *genConfig)
+    GenerateConfig()
   }
 
-  GenerateConfig()
+  if *listObjects == true {
+    fmt.Println("List Config:", *listObjects)
+    ListObjects()
+  }
+
+  if *daemonize == true {
+    fmt.Println("Daemonising the Filemonitor")
+  }
 }

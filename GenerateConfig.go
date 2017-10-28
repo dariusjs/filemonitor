@@ -15,15 +15,13 @@ func GenerateConfig() {
       },
     },
   }
-
-  data_json, _ := json.Marshal(data)
-  fmt.Println(string(data_json))
   
-  jsonFile, err := os.Create("./config1.json")
+  data_json, _ := json.Marshal(data)
+  
+  jsonFile, err := os.Create("./config.json.sample")
   if err != nil {
     panic(err)
   }
-
   defer jsonFile.Close()
 
   jsonFile.Write(data_json)
