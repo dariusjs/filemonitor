@@ -19,7 +19,7 @@ func GenerateConfig() {
   data_json, _ := json.Marshal(data)
   fmt.Println(string(data_json))
   
-  jsonFile, err := os.Create("./Config1.json")
+  jsonFile, err := os.Create("./config1.json")
   if err != nil {
     panic(err)
   }
