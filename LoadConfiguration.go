@@ -11,7 +11,7 @@ type Config struct {
 }
 
 type Directory struct {
-  Directory string `json:"directory"`
+  Object string `json:"directory"`
 }
 
 func LoadConfiguration(filename string) (Config, error) {
