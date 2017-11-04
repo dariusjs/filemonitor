@@ -1,7 +1,10 @@
 {
   "directories" : [
     {
-      "directory":"c:\\temp"
+      "directory": "/tmp",
+      "count": "5",
+      "find": ">60",
+      "freq": "5"
     }
   ]
 }
