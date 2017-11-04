@@ -15,6 +15,7 @@ func GenerateConfig() {
         5,
         ">60",
         5,
+        "Look at http://help.me/whatsthis on how to fix this",
       },
     },
   }

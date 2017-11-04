@@ -8,6 +8,7 @@ import (
   "os"
   "encoding/json"
   "time"
+  "strings"
 )
 
 type Config struct {
@@ -17,8 +18,9 @@ type Config struct {
 type Directory struct {
   Name string `json:"directory"`
   Count int `json:"count"`
-  Find string `json:"find"`
+  Age string `json:"age"`
   Frequency int `json:"frequency"`
+  ErrorMsg string `json:"errormsg"`
 }
 
 func LoadConfiguration(filename string) (Config, error) {
@@ -33,9 +35,7 @@ func LoadConfiguration(filename string) (Config, error) {
   return config, err
 }
 
-func ListObjects () {
-  config, _ := LoadConfiguration("config.json")
-
+func ListObjects(config Config) {
   for _, dir := range config.Directories {
     files, err := ioutil.ReadDir(dir.Name)
     if err != nil {
@@ -47,17 +47,35 @@ func ListObjects () {
   }
 }
 
-func Monitor() {
-  for t := range time.NewTicker(2 * time.Second).C {
-    fmt.Println("Gday", t)
+func Monitor(config Config) {
+  for _, dir := range config.Directories {
+    fmt.Println(dir)
+
+    for t := range time.NewTicker(time.Duration(dir.Frequency)*time.Second).C {
+      fmt.Println("Gday", t)
+
+      splitAge := strings.SplitAfterN(dir.Age, "", 2)
+      fmt.Println(splitAge[1])
+
+      fmt.Println(time.Now())
+
+      if (splitAge[0] == ">") {
+        fmt.Println("greater than")
+        fmt.Println(dir.ErrorMsg)
+      } else {
+        fmt.Println("less than")
+      }
+    }
   }
 }
 
 func main() {
+  config, _ := LoadConfiguration("config.json")
+
   //loadConf := flag.String("c", "config.json", "Used for loading config files.")
   genConfig := flag.Bool("g", false, "Used for generating config files")
   listObjects := flag.Bool("l", false, "Execute the default config.json config file")
-  daemonize := flag.Bool("d", false, "Daemonise the filemonitor")
+  daemonize := flag.Bool("d", false, "Run the filemonitor")
 
   flag.Parse()
 
@@ -68,11 +86,11 @@ func main() {
 
   if *listObjects == true {
     fmt.Println("List Config:", *listObjects)
-    ListObjects()
+    ListObjects(config)
   }
 
   if *daemonize == true {
-    fmt.Println("Daemonising the Filemonitor")
-    Monitor()
+    fmt.Println("Running the Filemonitor")
+    Monitor(config)
   }
 }
