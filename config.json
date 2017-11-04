@@ -2,7 +2,9 @@
   "directories" : [
     {
       "directory": "/tmp",
-      "find": "-60"
+      "count": "5",
+      "find": ">60",
+      "freq": "5"
     }
   ]
 }

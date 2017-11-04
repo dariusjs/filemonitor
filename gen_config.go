@@ -12,6 +12,9 @@ func GenerateConfig() {
     []Directory {
       Directory {
         "/tmp",
+        5,
+        ">60",
+        5,
       },
     },
   }
