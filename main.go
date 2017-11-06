@@ -9,6 +9,7 @@ import (
   "encoding/json"
   "time"
   "strings"
+  "sync"
 )
 
 type Config struct {
@@ -47,37 +48,44 @@ func ListObjects(config Config) {
   }
 }
 
-func Monitor(config Config) {
-  for _, dir := range config.Directories {
-    fmt.Println(dir)
+func Timer(dir Directory) {
+  for t := range time.NewTicker(time.Duration(dir.Frequency)*time.Second).C {
 
-    for t := range time.NewTicker(time.Duration(dir.Frequency)*time.Second).C {
-      fmt.Println("Gday", t)
+    fmt.Println("Gday", t)
 
-      splitAge := strings.SplitAfterN(dir.Age, "", 2)
-      fmt.Println(splitAge[1])
+    splitAge := strings.SplitAfterN(dir.Age, "", 2)
+    fmt.Println(splitAge[1])
+    fmt.Println(time.Now())
 
-      fmt.Println(time.Now())
-
-      if (splitAge[0] == ">") {
-        fmt.Println("greater than")
-        fmt.Println(dir.ErrorMsg)
-      } else {
-        fmt.Println("less than")
-      }
+    if (splitAge[0] == ">") {
+      fmt.Println("greater than")
+      fmt.Println(dir.ErrorMsg)
+    } else if (splitAge[0] == "<") {
+      fmt.Println("less than")
+    } else {
+      fmt.Println("Some error stuff")
     }
   }
 }
 
+func Monitor(config Config) {
+  for _, dir := range config.Directories {
+    fmt.Println(dir)
+    go Timer(dir)
+  }
+}
+
 func main() {
+  var wg sync.WaitGroup
+
   config, _ := LoadConfiguration("config.json")
 
-  //loadConf := flag.String("c", "config.json", "Used for loading config files.")
   genConfig := flag.Bool("g", false, "Used for generating config files")
   listObjects := flag.Bool("l", false, "Execute the default config.json config file")
   daemonize := flag.Bool("d", false, "Run the filemonitor")
 
   flag.Parse()
+  
 
   if *genConfig == true {
     fmt.Println("Generate Config:", *genConfig)
@@ -93,4 +101,6 @@ func main() {
     fmt.Println("Running the Filemonitor")
     Monitor(config)
   }
+  time.Sleep(3000 * time.Millisecond)
+  wg.Wait()
 }
