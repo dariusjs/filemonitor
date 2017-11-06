@@ -24,6 +24,7 @@ type Directory struct {
   ErrorMsg string `json:"errormsg"`
 }
 
+// LoadConfiguration will load the json config from file into memory
 func LoadConfiguration(filename string) (Config, error) {
   var config Config
   configFile, err := os.Open(filename)
@@ -36,6 +37,7 @@ func LoadConfiguration(filename string) (Config, error) {
   return config, err
 }
 
+// ListObjects will run something like ls on unix
 func ListObjects(config Config) {
   for _, dir := range config.Directories {
     files, err := ioutil.ReadDir(dir.Name)
@@ -43,13 +45,14 @@ func ListObjects(config Config) {
       log.Fatal(err)
     }
     for _, file := range files {
-      fmt.Println(file.Name())
+      fmt.Println(file.Mode(), file.ModTime(), file.Size, file.Name())
     }
   }
 }
 
+// Timer will watch directories specifcally as file monitors will be separate to this
 func Timer(dir Directory) {
-  for t := range time.NewTicker(time.Duration(dir.Frequency)*time.Second).C {
+  for t := range (time.NewTicker(time.Duration(dir.Frequency)*time.Second).C) {
 
     fmt.Println("Gday", t)
 
@@ -63,11 +66,13 @@ func Timer(dir Directory) {
     } else if (splitAge[0] == "<") {
       fmt.Println("less than")
     } else {
+      // implement some error catch here
       fmt.Println("Some error stuff")
     }
   }
 }
 
+// Monitor will watch the monitored file system objects 
 func Monitor(config Config) {
   for _, dir := range config.Directories {
     fmt.Println(dir)
@@ -77,15 +82,14 @@ func Monitor(config Config) {
 
 func main() {
   var wg sync.WaitGroup
-
   config, _ := LoadConfiguration("config.json")
+  configLength := len(config.Directories)
 
   genConfig := flag.Bool("g", false, "Used for generating config files")
   listObjects := flag.Bool("l", false, "Execute the default config.json config file")
   daemonize := flag.Bool("d", false, "Run the filemonitor")
 
   flag.Parse()
-  
 
   if *genConfig == true {
     fmt.Println("Generate Config:", *genConfig)
@@ -99,8 +103,8 @@ func main() {
 
   if *daemonize == true {
     fmt.Println("Running the Filemonitor")
+    wg.Add(configLength)
     Monitor(config)
+    wg.Wait()
   }
-  time.Sleep(3000 * time.Millisecond)
-  wg.Wait()
 }
