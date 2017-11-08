@@ -10,6 +10,7 @@ import (
   "time"
   "strings"
   "sync"
+  "strconv"
 )
 
 type Config struct {
@@ -38,20 +39,61 @@ func LoadConfiguration(filename string) (Config, error) {
 }
 
 // ListObjects will run something like ls on unix
+// func ListObjects(config Config) {
+//   for _, dir := range config.Directories {
+//     files, err := ioutil.ReadDir(dir.Name)
+//     if err != nil {
+//       log.Fatal(err)
+//     }
+//     for _, file := range files {
+//       fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
+//     }
+//   }
+// }
+
 func ListObjects(config Config) {
   for _, dir := range config.Directories {
-    files, err := ioutil.ReadDir(dir.Name)
-    if err != nil {
-      log.Fatal(err)
+    splitAge := strings.SplitAfterN(dir.Age, "", 2)
+    if (splitAge[0] == ">") {
+      fmt.Println("Older than")
+      fmt.Println(dir.ErrorMsg)
+
+      files, err := ioutil.ReadDir(dir.Name)
+      if err != nil {
+        log.Fatal(err)
+      }
+      for _, file := range files {
+        // fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
+        now := time.Now()
+        targetTime, err := strconv.Atoi(splitAge[1])
+        //targetTime := time.Now().Add(-strconv.Atoi(splitAge[1]) * time.Second)
+        asd := time.Now().Add(-time.Duration(targetTime) * time.Second)
+        if err != nil {
+          log.Fatal(err)
+        }
+        
+
+        fmt.Println(now)
+        fmt.Println(targetTime)
+        fmt.Println(asd)
+        fmt.Println(splitAge[1])
+        // if (time.Now() > time.Now()) {
+          fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
+        // }
+      }
+    } else if (splitAge[0] == "<") {
+      fmt.Println("less than")
+    } else {
+      // implement some error catch here
+      fmt.Println("Some error stuff")
     }
-    for _, file := range files {
-      fmt.Println(file.Mode(), file.ModTime(), file.Size, file.Name())
-    }
+    
+
   }
 }
 
 // Timer will watch directories specifcally as file monitors will be separate to this
-func Timer(dir Directory) {
+func Watcher(dir Directory) {
   for t := range (time.NewTicker(time.Duration(dir.Frequency)*time.Second).C) {
 
     fmt.Println("Gday", t)
@@ -61,8 +103,10 @@ func Timer(dir Directory) {
     fmt.Println(time.Now())
 
     if (splitAge[0] == ">") {
-      fmt.Println("greater than")
+      fmt.Println("Older than")
       fmt.Println(dir.ErrorMsg)
+
+
     } else if (splitAge[0] == "<") {
       fmt.Println("less than")
     } else {
@@ -72,11 +116,11 @@ func Timer(dir Directory) {
   }
 }
 
-// Monitor will watch the monitored file system objects 
+// Monitor will watch the monitored file system objects
 func Monitor(config Config) {
   for _, dir := range config.Directories {
     fmt.Println(dir)
-    go Timer(dir)
+    go Watcher(dir)
   }
 }
 
