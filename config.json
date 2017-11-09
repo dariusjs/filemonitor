@@ -2,17 +2,10 @@
   "directories" : [
     {
       "directory": "/tmp",
-      "count": 0,
+      "count": 25,
       "mtime": "-1h",
       "frequency": "5s",
-      "errormsg": "Look at http://help.me/whatsthis on how to fix this"
-    },
-    {
-      "directory": "/var",
-      "count": 5,
-      "mtime": "-1h",
-      "frequency": "1s",
-      "errormsg": "Look at http://help.you/whatsthis on how to fix this"
+      "errormsg": "No files found here. Check http://help.you/whatsthis on how to fix this"
     }
   ]
 }

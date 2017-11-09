@@ -50,13 +50,13 @@ func ListObjects(config Config) {
       }
       timeDiff := file.ModTime().Sub(time.Now())
 
-      if(timeDiff >= targetTime) {
+      if(timeDiff > targetTime) {
         // fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
         i += 1
       }
     }
     fmt.Println("Total:", i)
-    if (i > dir.Count) {
+    if (i <= dir.Count) {
       fmt.Println("(╯°□°）╯︵ ┻━┻)")
     }
   }
@@ -81,7 +81,7 @@ func ListObjects2(dir Directory, config Config) {
     }
   }
   fmt.Println("Total:", i)
-  if (i > dir.Count) {
+  if (i >= dir.Count) {
     fmt.Println("(╯°□°）╯︵ ┻━┻)")
   }
 }
@@ -109,7 +109,7 @@ func Monitor(config Config) {
 
 func main() {
   var wg001 sync.WaitGroup
-  var wg002 sync.WaitGroup
+  // var wg002 sync.WaitGroup
   config, _ := LoadConfiguration("config.json")
   configLength := len(config.Directories)
 
@@ -126,14 +126,16 @@ func main() {
 
   if *listObjects == true {
     fmt.Println("List Config:", *listObjects)
-    // ListObjects(config)
-    wg002.Add(configLength)
-    for _, dir := range config.Directories {
-      fmt.Println(dir)
-      go ListObjects2(dir, config)
-    }
+    ListObjects(config)
+    // wg002.Add(configLength)
+    // fmt.Println("configlength is:", configLength)
+
+    // for _, dir := range config.Directories {
+    //   fmt.Println(dir)
+    //   go ListObjects2(dir, config)
+    // }
     // wg002.Wait()
-    time.Sleep(2 * time.Second)
+    // // time.Sleep(2 * time.Second)
   }
   
   if *daemonize == true {
