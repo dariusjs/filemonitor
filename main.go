@@ -19,7 +19,7 @@ type Directory struct {
   Name string `json:"directory"`
   Count int `json:"count"`
   Mtime string `json:"mtime"`
-  Frequency int `json:"frequency"`
+  Frequency string `json:"frequency"`
   ErrorMsg string `json:"errormsg"`
 }
 
@@ -35,19 +35,6 @@ func LoadConfiguration(filename string) (Config, error) {
   jsonParser.Decode(&config)
   return config, err
 }
-
-// ListObjects will run something like ls on unix
-// func ListObjects(config Config) {
-//   for _, dir := range config.Directories {
-//     files, err := ioutil.ReadDir(dir.Name)
-//     if err != nil {
-//       log.Fatal(err)
-//     }
-//     for _, file := range files {
-//       fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
-//     }
-//   }
-// }
 
 func ListObjects(config Config) {
   for _, dir := range config.Directories {
@@ -72,25 +59,13 @@ func ListObjects(config Config) {
 
 // Timer will watch directories specifcally as file monitors will be separate to this
 func Watcher(dir Directory) {
-  for t := range (time.NewTicker(time.Duration(dir.Frequency)*time.Second).C) {
-
+  // for t := range (time.NewTicker(time.Duration(dir.Frequency)*time.Second).C) {
+  scanFreq, err := time.ParseDuration(dir.Frequency)
+  if err != nil {
+    log.Fatal(err)
+  }
+  for t := range (time.NewTicker(scanFreq).C) {
     fmt.Println("Gday", t)
-
-    // splitMtime := strings.SplitAfterN(dir.Mtime, "", 2)
-    // fmt.Println(splitMtime[1])
-    // fmt.Println(time.Now())
-
-    // if (splitMtime[0] == "+") {
-    //   fmt.Println("Older than")
-    //   fmt.Println(dir.ErrorMsg)
-
-
-    // } else if (splitMtime[0] == "-") {
-    //   fmt.Println("less than")
-    // } else {
-    //   // implement some error catch here
-    //   fmt.Println("Some error stuff")
-    // }
   }
 }
 

@@ -14,7 +14,7 @@ func GenerateConfig() {
         "/tmp",
         5,
         "-60s",
-        5,
+        "5s",
         "Look at http://help.me/whatsthis on how to fix this",
       },
     },

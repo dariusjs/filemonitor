@@ -3,15 +3,15 @@
     {
       "directory": "/tmp",
       "count": 5,
-      "mtime": "-60s",
-      "frequency": 5,
+      "mtime": "-1h",
+      "frequency": "5s",
       "errormsg": "Look at http://help.me/whatsthis on how to fix this"
     },
     {
       "directory": "/var",
       "count": 5,
       "mtime": "-1h",
-      "frequency": 1,
+      "frequency": "1s",
       "errormsg": "Look at http://help.you/whatsthis on how to fix this"
     }
   ]
