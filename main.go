@@ -38,7 +38,7 @@ func LoadConfiguration(filename string) (Config, error) {
 
 func ListObjects(config Config) {
   for _, dir := range config.Directories {
-
+    i := 0
     files, err := ioutil.ReadDir(dir.Name)
     if err != nil {
       log.Fatal(err)
@@ -50,15 +50,44 @@ func ListObjects(config Config) {
       }
       timeDiff := file.ModTime().Sub(time.Now())
 
-      if (timeDiff >= targetTime) {
-        fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
+      if(timeDiff >= targetTime) {
+        // fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
+        i += 1
       }
+    }
+    fmt.Println("Total:", i)
+    if (i > dir.Count) {
+      fmt.Println("(╯°□°）╯︵ ┻━┻)")
     }
   }
 }
 
+func ListObjects2(dir Directory, config Config) {
+  i := 0
+  files, err := ioutil.ReadDir(dir.Name)
+  if err != nil {
+    log.Fatal(err)
+  }
+  for _, file := range files {
+    targetTime, err := time.ParseDuration(dir.Mtime)
+    if err != nil {
+      log.Fatal(err)
+    }
+    timeDiff := file.ModTime().Sub(time.Now())
+
+    if(timeDiff >= targetTime) {
+      // fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
+      i += 1
+    }
+  }
+  fmt.Println("Total:", i)
+  if (i > dir.Count) {
+    fmt.Println("(╯°□°）╯︵ ┻━┻)")
+  }
+}
+
 // Timer will watch directories specifcally as file monitors will be separate to this
-func Watcher(dir Directory) {
+func Watcher(dir Directory, config Config) {
   // for t := range (time.NewTicker(time.Duration(dir.Frequency)*time.Second).C) {
   scanFreq, err := time.ParseDuration(dir.Frequency)
   if err != nil {
@@ -66,6 +95,7 @@ func Watcher(dir Directory) {
   }
   for t := range (time.NewTicker(scanFreq).C) {
     fmt.Println("Gday", t)
+    ListObjects2(dir, config)
   }
 }
 
@@ -73,12 +103,13 @@ func Watcher(dir Directory) {
 func Monitor(config Config) {
   for _, dir := range config.Directories {
     fmt.Println(dir)
-    go Watcher(dir)
+    go Watcher(dir, config)
   }
 }
 
 func main() {
-  var wg sync.WaitGroup
+  var wg001 sync.WaitGroup
+  var wg002 sync.WaitGroup
   config, _ := LoadConfiguration("config.json")
   configLength := len(config.Directories)
 
@@ -95,13 +126,20 @@ func main() {
 
   if *listObjects == true {
     fmt.Println("List Config:", *listObjects)
-    ListObjects(config)
+    // ListObjects(config)
+    wg002.Add(configLength)
+    for _, dir := range config.Directories {
+      fmt.Println(dir)
+      go ListObjects2(dir, config)
+    }
+    // wg002.Wait()
+    time.Sleep(2 * time.Second)
   }
-
+  
   if *daemonize == true {
     fmt.Println("Running the Filemonitor")
-    wg.Add(configLength)
+    wg001.Add(configLength)
     Monitor(config)
-    wg.Wait()
+    wg001.Wait()
   }
 }

@@ -2,7 +2,7 @@
   "directories" : [
     {
       "directory": "/tmp",
-      "count": 5,
+      "count": 0,
       "mtime": "-1h",
       "frequency": "5s",
       "errormsg": "Look at http://help.me/whatsthis on how to fix this"
