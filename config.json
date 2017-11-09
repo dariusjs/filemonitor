@@ -2,10 +2,17 @@
   "directories" : [
     {
       "directory": "/tmp",
-      "count": 25,
+      "count": "<0",
       "mtime": "-1h",
       "frequency": "5s",
-      "errormsg": "No files found here. Check http://help.you/whatsthis on how to fix this"
+      "errormsg": "No files found here from the last hour. Check http://help.you/whatsthis on how to fix this"
+    },
+    {
+      "directory": "/tmp/asda",
+      "count": "<1",
+      "mtime": "-1h",
+      "frequency": "5s",
+      "errormsg": "More than 2  files found in last hour Check http://help.you/whatsthis on how to fix this"
     }
   ]
 }

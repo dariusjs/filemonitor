@@ -9,6 +9,8 @@ import (
   "encoding/json"
   "time"
   "sync"
+  "strings"
+  "strconv"
 )
 
 type Config struct {
@@ -17,7 +19,7 @@ type Config struct {
 
 type Directory struct {
   Name string `json:"directory"`
-  Count int `json:"count"`
+  Count string `json:"count"`
   Mtime string `json:"mtime"`
   Frequency string `json:"frequency"`
   ErrorMsg string `json:"errormsg"`
@@ -56,9 +58,34 @@ func ListObjects(config Config) {
       }
     }
     fmt.Println("Total:", i)
-    if (i <= dir.Count) {
-      fmt.Println("(╯°□°）╯︵ ┻━┻)")
+    
+
+    splitCount := strings.SplitAfterN(dir.Count, "", 2)
+    intCount, err := strconv.Atoi(splitCount[1])
+    if err != nil {
+      log.Fatal(err)
     }
+
+    if (splitCount[0] == "<") {
+      if (i < intCount) {
+        fmt.Println("Less than")
+        fmt.Println("(╯°□°）╯︵ ┻━┻)")
+        fmt.Println(dir.ErrorMsg)
+      }
+    } else if (splitCount[0] == ">") {
+      if (i >= intCount) {
+        fmt.Println("more than")
+        fmt.Println("(╯°□°）╯︵ ┻━┻)")
+        fmt.Println(dir.ErrorMsg)
+      }
+    } else {
+      // implement some error catch here
+      fmt.Println("Some error stuff")
+    }
+
+    // if (i <= dir.Count) {
+    //   fmt.Println("(╯°□°）╯︵ ┻━┻)")
+    // }
   }
 }
 
@@ -81,9 +108,9 @@ func ListObjects2(dir Directory, config Config) {
     }
   }
   fmt.Println("Total:", i)
-  if (i >= dir.Count) {
-    fmt.Println("(╯°□°）╯︵ ┻━┻)")
-  }
+  // if (i >= dir.Count) {
+  //   fmt.Println("(╯°□°）╯︵ ┻━┻)")
+  // }
 }
 
 // Timer will watch directories specifcally as file monitors will be separate to this
