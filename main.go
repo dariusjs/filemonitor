@@ -8,9 +8,7 @@ import (
   "os"
   "encoding/json"
   "time"
-  "strings"
   "sync"
-  "strconv"
 )
 
 type Config struct {
@@ -20,7 +18,7 @@ type Config struct {
 type Directory struct {
   Name string `json:"directory"`
   Count int `json:"count"`
-  Age string `json:"age"`
+  Mtime string `json:"mtime"`
   Frequency int `json:"frequency"`
   ErrorMsg string `json:"errormsg"`
 }
@@ -53,42 +51,22 @@ func LoadConfiguration(filename string) (Config, error) {
 
 func ListObjects(config Config) {
   for _, dir := range config.Directories {
-    splitAge := strings.SplitAfterN(dir.Age, "", 2)
-    if (splitAge[0] == ">") {
-      fmt.Println("Older than")
-      fmt.Println(dir.ErrorMsg)
 
-      files, err := ioutil.ReadDir(dir.Name)
+    files, err := ioutil.ReadDir(dir.Name)
+    if err != nil {
+      log.Fatal(err)
+    }
+    for _, file := range files {
+      targetTime, err := time.ParseDuration(dir.Mtime)
       if err != nil {
         log.Fatal(err)
       }
-      for _, file := range files {
-        // fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
-        now := time.Now()
-        targetTime, err := strconv.Atoi(splitAge[1])
-        //targetTime := time.Now().Add(-strconv.Atoi(splitAge[1]) * time.Second)
-        asd := time.Now().Add(-time.Duration(targetTime) * time.Second)
-        if err != nil {
-          log.Fatal(err)
-        }
-        
+      timeDiff := file.ModTime().Sub(time.Now())
 
-        fmt.Println(now)
-        fmt.Println(targetTime)
-        fmt.Println(asd)
-        fmt.Println(splitAge[1])
-        // if (time.Now() > time.Now()) {
-          fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
-        // }
+      if (timeDiff >= targetTime) {
+        fmt.Println(file.Mode(), file.ModTime(), file.Size(), file.Name())
       }
-    } else if (splitAge[0] == "<") {
-      fmt.Println("less than")
-    } else {
-      // implement some error catch here
-      fmt.Println("Some error stuff")
     }
-    
-
   }
 }
 
@@ -98,21 +76,21 @@ func Watcher(dir Directory) {
 
     fmt.Println("Gday", t)
 
-    splitAge := strings.SplitAfterN(dir.Age, "", 2)
-    fmt.Println(splitAge[1])
-    fmt.Println(time.Now())
+    // splitMtime := strings.SplitAfterN(dir.Mtime, "", 2)
+    // fmt.Println(splitMtime[1])
+    // fmt.Println(time.Now())
 
-    if (splitAge[0] == ">") {
-      fmt.Println("Older than")
-      fmt.Println(dir.ErrorMsg)
+    // if (splitMtime[0] == "+") {
+    //   fmt.Println("Older than")
+    //   fmt.Println(dir.ErrorMsg)
 
 
-    } else if (splitAge[0] == "<") {
-      fmt.Println("less than")
-    } else {
-      // implement some error catch here
-      fmt.Println("Some error stuff")
-    }
+    // } else if (splitMtime[0] == "-") {
+    //   fmt.Println("less than")
+    // } else {
+    //   // implement some error catch here
+    //   fmt.Println("Some error stuff")
+    // }
   }
 }
 
